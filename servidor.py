@@ -19,9 +19,9 @@ def send_to_all (sock, msg):
 print('SERVIDOR')
 buffer = 1024
 #dictionary to store address corresponding to username
-users_list={}
+users_dict={}
 # List to keep track of socket descriptors
-connected_list = {}
+connected_list = []
 
 # Create a TCP/IP socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -61,24 +61,24 @@ while True:
 
             user_name = user_name.decode()
             connected_list.append(new_sock)
-            users_list[hostname] = Usuario()
-            users_list[hostname].setNomeUsuario(user_name)
-            users_list[hostname].setNick(nickname)
-            #print ("users_list and conn list ",users_list,connected_list)
+            users_dict[hostname] = Usuario()
+            users_dict[hostname].setNomeUsuario(user_name)
+            users_dict[hostname].setNick(nickname)
+            #print ("users_dict and conn list ",users_dict,connected_list)
 
             #if repeated username
-            if user_name in users_list.values():
+            if user_name in [a_user.getNomeUsuario() for a_user in users_dict.values()]: #if user_name in users_dict.values(): 
                 message = "\r\33[31m\33[1m Username already taken!\n\33[0m"
                 message = message.encode()
                 new_sock.send(message)
-                del users_list[hostname]
+                del users_dict[hostname]
                 connected_list.remove(new_sock)
                 new_sock.close()
                 continue
             else:
                 #add user_name and address
-                users_list[hostname] = user_name
-                print ("Client {} connected [{}]".format(hostname, users_list[hostname]))
+                users_dict[hostname] = user_name
+                print ("Client {} connected [{}]".format(hostname, users_dict[hostname]))
                 message = "\33[32m\r\33[1m Welcome to chat room.\n\33[0m"
                 message = message.encode()
                 new_sock.sendall(message)
@@ -94,26 +94,24 @@ while True:
 
                 ip, porta = sock.getpeername()
                 if not data:
-                    send_to_all(sock, "\r\33[31m \33[1m"+users_list[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
-                    del users_list[(ip,porta)]
+                    send_to_all(sock, "\r\33[31m \33[1m"+users_dict[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
+                    del users_dict[(ip,porta)]
                     connected_list.remove(sock)
                     sock.close()
                 else:
                     data = data.decode()
-                    msg = "\r\33[1m"+"\33[35m "+users_list[(ip,porta)]+": "+"\33[0m"+data+"\n"
+                    msg = "\r\33[1m"+"\33[35m "+users_dict[(ip,porta)]+": "+"\33[0m"+data+"\n"
                     send_to_all(sock, msg)
 
             #abrupt user exit
             except:
                 print('aki')
                 (ip,porta)=sock.getpeername()
-                send_to_all(sock, "\r\33[31m \33[1m"+users_list[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
-                print ("Client {} is offline (error) [{}]".format((ip,porta),users_list[(ip,porta)]))
-                del users_list[(ip,porta)]
+                send_to_all(sock, "\r\33[31m \33[1m"+users_dict[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
+                print ("Client {} is offline (error) [{}]".format((ip,porta),users_dict[(ip,porta)]))
+                del users_dict[(ip,porta)]
                 connected_list.remove(sock)
                 sock.close()
                 continue
-
-
 
 server_socket.close()
