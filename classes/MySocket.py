@@ -31,8 +31,18 @@ class MySocket:
             sys.exit(1)
 
     def mySend(self, msg):
-        message = msg.encode()
-        self.sock.sendall(message)
+        primeiro_acesso = True
+        if primeiro_acesso:
+            usuario = msg
+            hostname = socket.gethostname()
+            dados = usuario + '\n' + hostname
+            print('dados:', dados, '|enviado!')
+            dados = dados.encode()
+            self.sock.send(dados)
+            primeiro_acesso = False
+        else:
+            message = msg.encode()
+            self.sock.sendall(message)
 
     def mysend_old(self, msg):
         self.MSGLEN = len(msg)
@@ -68,11 +78,6 @@ class MySocket:
                 #incoming message from server
                 if sock == self.sock:
                     data = self.sock.recv(self.buffer)
-
-                    if primeiro_acesso = True:
-                        usuario = sys.stdin.readline()
-                        usuario = msg[:msg.index('\n')].encode()
-                        self.sock.send(usuario)
 
                     if not data:
                         print ('\33[31m\33[1m \n DISCONNECTED!!\n \33[0m')

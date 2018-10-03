@@ -48,42 +48,46 @@ while True:
         if sock is server_socket:
             print('server')
             # Handle the case in which there is a new connection recieved through server_socket
-            new_sock, hostname = server_socket.accept()
+            new_sock, address = server_socket.accept()
+            #print('hn:', socket.getaddress(),'| ip?', address, ' | peer: ', new_sock.getsockname() )
+            '''
             message = "\r\33[34m\33[1m \n Digite o seu USUARIO:\n \33[0m"
             message = message.encode()
             new_sock.send(message)
-            user_name = new_sock.recv(buffer)
+
+
 
             message = "\r\33[34m\33[1m \n Digite o seu APELIDO:\n \33[0m"
             message = message.encode()
             new_sock.send(message)
             nickname  = new_sock.recv(buffer)
-
-            user_name = user_name.decode()
+            '''
+            data = new_sock.recv(buffer)
+            data = data.decode()
+            user_name, hostname = data.split('\n')
             connected_list.append(new_sock)
-            users_dict[hostname] = Usuario()
-            users_dict[hostname].setNomeUsuario(user_name)
-            users_dict[hostname].setNick(nickname)
+            users_dict[address] = Usuario()
             #print ("users_dict and conn list ",users_dict,connected_list)
 
             #if repeated username
-            if user_name in [a_user.getNomeUsuario() for a_user in users_dict.values()]: #if user_name in users_dict.values(): 
+            if user_name in [a_user.getNomeUsuario() for a_user in users_dict.values()]: #if user_name in users_dict.values():
                 message = "\r\33[31m\33[1m Username already taken!\n\33[0m"
                 message = message.encode()
                 new_sock.send(message)
-                del users_dict[hostname]
+                del users_dict[address]
                 connected_list.remove(new_sock)
                 new_sock.close()
                 continue
             else:
                 #add user_name and address
-                users_dict[hostname] = user_name
-                print ("Client {} connected [{}]".format(hostname, users_dict[hostname]))
+                users_dict[address].setNomeUsuario(user_name)
+                users_dict[address].setHostname(hostname)
+                print ("Client {} connected [{}]".format(address, users_dict[address]))
                 message = "\33[32m\r\33[1m Welcome to chat room.\n\33[0m"
                 message = message.encode()
                 new_sock.sendall(message)
                 send_to_all(new_sock, "\33[32m\33[1m\r "+ user_name + " joined the conversation \n\33[0m")
-                print('n:',new_sock.getpeername())
+                #print('n:',new_sock.getpeername())
 
         #Some incoming message from a client
         else:
@@ -94,21 +98,21 @@ while True:
 
                 ip, porta = sock.getpeername()
                 if not data:
-                    send_to_all(sock, "\r\33[31m \33[1m"+users_dict[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
+                    send_to_all(sock, "\r\33[31m \33[1m" + users_dict[(ip,porta)].getNomeUsuario() + " left the conversation unexpectedly\33[0m\n")
                     del users_dict[(ip,porta)]
                     connected_list.remove(sock)
                     sock.close()
                 else:
                     data = data.decode()
-                    msg = "\r\33[1m"+"\33[35m "+users_dict[(ip,porta)]+": "+"\33[0m"+data+"\n"
+                    msg = "\r\33[1m"+"\33[35m " + users_dict[(ip,porta)].getNomeUsuario() +": "+"\33[0m"+data+"\n"
                     send_to_all(sock, msg)
 
             #abrupt user exit
             except:
                 print('aki')
                 (ip,porta)=sock.getpeername()
-                send_to_all(sock, "\r\33[31m \33[1m"+users_dict[(ip,porta)]+" left the conversation unexpectedly\33[0m\n")
-                print ("Client {} is offline (error) [{}]".format((ip,porta),users_dict[(ip,porta)]))
+                send_to_all(sock, "\r\33[31m \33[1m"+ users_dict[(ip,porta)].getNomeUsuario() +" left the conversation unexpectedly\33[0m\n")
+                print ("Client {} is offline (error) [{}]".format((ip,porta), users_dict[(ip,porta)].getNomeUsuario()))
                 del users_dict[(ip,porta)]
                 connected_list.remove(sock)
                 sock.close()

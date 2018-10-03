@@ -8,8 +8,8 @@ mySock = MySocket()
 mySock.connect(host, port)
 
 
-#usuario = input('\33[34m\33[1m \n Digite o USUARIO: \33[0m')
-#usuario = usuario.lower()
+usuario = input('\33[34m\33[1m \n Digite o USUARIO: \33[0m')
+usuario = usuario.lower()
 
-#mySock.mySend(usuario)
+mySock.mySend(usuario)
 mySock.sockLoop()

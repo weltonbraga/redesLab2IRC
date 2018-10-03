@@ -4,7 +4,7 @@ class Usuario(object):
         super(Usuario, self).__init__()
         self.nomeUsuario = ''
         self.nomeReal = ''
-        self.nick = ''
+        self.hostname = ''
 
     def setNomeUsuario(self, arg):
         self.nomeUsuario = arg
@@ -12,8 +12,8 @@ class Usuario(object):
     def setNomeReal(self, arg):
         self.nomeReal = arg
 
-    def setNick(self, arg):
-        self.nick = arg
+    def setHostname(self, arg):
+        self.hostname = arg
 
     def getNomeUsuario(self):
         return self.nomeUsuario
@@ -21,5 +21,5 @@ class Usuario(object):
     def getNomReal(self):
         return self.nomeReal
 
-    def getNick(self):
-        return self.nick
+    def getHostname(self):
+        return self.hostname
