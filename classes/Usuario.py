@@ -5,6 +5,7 @@ class Usuario(object):
         self.nomeUsuario = ''
         self.nomeReal = ''
         self.hostname = ''
+        self.nick = ''
 
     def setNomeUsuario(self, arg):
         self.nomeUsuario = arg
@@ -15,6 +16,9 @@ class Usuario(object):
     def setHostname(self, arg):
         self.hostname = arg
 
+    def setNick(self, arg):
+        self.nick = arg
+
     def getNomeUsuario(self):
         return self.nomeUsuario
 
@@ -23,3 +27,6 @@ class Usuario(object):
 
     def getHostname(self):
         return self.hostname
+
+    def getNick(self):
+        return self.nick

@@ -23,24 +23,23 @@ class MySocket:
         return self.sock
 
     def connect(self, host, port):
-        print ('\33[34m\33[1m Client. Connecting... \33[0m', end= '', flush=False)
         try:
             self.sock.connect((host, port))
+            print ('\33[34m\33[1m [Sucesso] Conectando em {} porta {}. \33[0m'.format(host, port), end= '', flush=False)
         except:
-            print ("\33[31m\33[1m \n Can't connect to the server \33[0m")
+            print ("\33[31m\33[1m \n [Erro] Nao foi possivel conectar ao servidor. \33[0m")
             sys.exit(1)
 
+    def sendNickAndHostname(self, msg):
+        usuario = msg
+        hostname = socket.gethostname()
+        dados = usuario + '\n' + hostname
+        #print('dados:', dados, '|enviado!')
+        dados = dados.encode()
+        self.sock.send(dados)
+        primeiro_acesso = False
+
     def mySend(self, msg):
-        primeiro_acesso = True
-        if primeiro_acesso:
-            usuario = msg
-            hostname = socket.gethostname()
-            dados = usuario + '\n' + hostname
-            print('dados:', dados, '|enviado!')
-            dados = dados.encode()
-            self.sock.send(dados)
-            primeiro_acesso = False
-        else:
             message = msg.encode()
             self.sock.sendall(message)
 
@@ -84,7 +83,10 @@ class MySocket:
                         sys.exit()
                     else:
                         data = data.decode()
-                        sys.stdout.write(data)
+                        if data[:1] == '!':
+                            print(data[1:])
+                        else:
+                            sys.stdout.write(data)
                         self.display()
                 #user entered a message
                 else :
