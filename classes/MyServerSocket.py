@@ -59,7 +59,7 @@ class MyServerSocket(object):
     def nickClientHandler(self, args_list):
         address = args_list.pop(0)
         new_nick = ' '.join(args_list.pop(0))
-        sock = self.users_dict[address].getSocket() #sock = args_list.pop(0)
+        sock = self.users_dict[address].getSocket()
 
         if new_nick in [a_user.getNick() for a_user in self.users_dict.values()]:
             return '!\r\33[31m\33[1m [Erro] Esse nick já está sendo usado! \33[0m'
@@ -97,9 +97,8 @@ class MyServerSocket(object):
 
     def deleteClientHandler(self, args_list ):
         address = args_list.pop(0)
-        sock = self.users_dict[address].getSocket() #sock = args_list.pop(0)
+        sock = self.users_dict[address].getSocket()
         user_nick = self.users_dict[address].getNick()
-        #print('\n      delete client\n')
         msg = "\r\33[1m"+"\33[31m "+ user_nick +" saiu do canal. \33[0m\n"
         self.sendToChannel(self.users_dict[address], msg)
         print ("Client {} is offline [{}]".format(address, user_nick))
@@ -107,14 +106,11 @@ class MyServerSocket(object):
         del self.users_dict[address]
         self.connected_list.remove(sock)
         sock.close()
-
-        #print('      fim delete client\n')
         return
 
     def subscribeChannelHandler(self, args_list):
         print('l:',args_list)
         address = args_list.pop(0)
-        #sock = self.users_dict[address].getSocket() #sock = args_list.pop(0)
         old_ch_num = self.users_dict[address].getChannel()
         print('l:',args_list)
         try:
@@ -189,33 +185,26 @@ class MyServerSocket(object):
                 time.sleep(.100)
                 # Get the list sockets which are ready to be read through select
                 rList,wList,error_sockets = select.select(self.connected_list,[],[], 0)
-                #print('l:', len(rList))
                 for sock in rList:
-                    #print('sock:', sock)
                     #New connection
                     if sock is self.server_socket:
 
                         # Handle the case in which there is a new connection recieved through server_socket
                         new_sock, address = self.server_socket.accept()
-                        print('   Novo user', address)
-                        #print('hn:', socket.getaddress(),'| ip?', address, ' | peer: ', new_sock.getsockname() )
 
                         data = new_sock.recv(self.buffer)
                         data = data.decode()
-                        print('   data: ', data)
+                        print('   Novo usuario: {} [{}]', address, data )
                         try:
                             user_nick, hostname = data.split('\n')
                         except:
                             new_sock.close()
-                            print("Conexão falhou: nome de usuario invalido")
+                            print("Conexão falhou: nome de usuario ou hostname invalido")
                             continue
 
                         self.connected_list.append(new_sock)
 
                         self.users_dict[address] = User(new_sock)
-
-
-                        #print ("self.users_dict and conn list ",self.users_dict,self.connected_list)
 
                         # if repeated username
                         if user_nick in [a_user.getNick() for a_user in self.users_dict.values()]: #if user_nick in self.users_dict.values():
@@ -236,17 +225,15 @@ class MyServerSocket(object):
                             self.users_dict[address].setChannel(self.lobby_channel)
                             print ("Client {} connected [{}]".format(address, self.users_dict[address].getNick()))
                             message = '!\n\33[32m\r\33[1m ### Bem vindo ao chat ### \n'
-                            #message += self.handlers['/LISTAR']()
+
                             message += '\n Digite /LISTAR para ver lista de canais. \33[0m\n'
                             self.sendToHost(new_sock, message)
 
                             self.sendToChannel(self.users_dict[address], '!\33[32m\33[1m \n "' + user_nick + '" entrou no canal. \33[0m \n')
-                            # print('n:',new_sock.getpeername())
 
                     #Some incoming message from a client
                     else:
                         # Data from client
-
                         try:
                             data = sock.recv(self.buffer)
                             data = data.decode()

@@ -1,7 +1,6 @@
 import socket, time, sys, select
 class MyClientSocket:
     def __init__(self, sock=''):
-        self.MSGLEN = 0
         if not sock:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
@@ -32,7 +31,6 @@ class MyClientSocket:
         usuario = msg
         hostname = socket.gethostname()
         dados = usuario + '\n' + hostname
-        #print('dados:', dados, '|enviado!')
         dados = dados.encode()
         self.sock.send(dados)
         primeiro_acesso = False
