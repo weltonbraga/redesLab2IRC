@@ -1,7 +1,9 @@
 class Usuario(object):
     """docstring for Usuario"""
-    def __init__(self):
-        super(Usuario, self).__init__()
+    def __init__(self, sock):
+        self.sock = sock
+        self.channel = -1
+
         self.nomeUsuario = ''
         self.nomeReal = ''
         self.hostname = ''
@@ -19,6 +21,9 @@ class Usuario(object):
     def setNick(self, arg):
         self.nick = arg
 
+    def setChannel(self, arg):
+        self.channel = arg
+
     def getNomeUsuario(self):
         return self.nomeUsuario
 
@@ -30,3 +35,9 @@ class Usuario(object):
 
     def getNick(self):
         return self.nick
+
+    def getSocket(self):
+        return self.sock
+
+    def getChannel(self):
+        return self.channel

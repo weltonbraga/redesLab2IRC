@@ -16,7 +16,7 @@ def main():
     mySock = MySocket()
     mySock.connect(host, port)
 
-    nick = input('\33[34m\33[1m \n Digite o USUARIO: \33[0m')
+    nick = input('\33[32m\r\33[1m \n Digite o USUARIO: \33[0m')
     nick = nick.lower()
 
     mySock.sendNickAndHostname(nick)
