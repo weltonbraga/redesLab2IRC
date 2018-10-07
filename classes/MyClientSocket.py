@@ -1,9 +1,5 @@
-import socket, sys, time, select
-class MySocket:
-    """demonstration class only
-      - coded for clarity, not efficiency
-    """
-
+import socket, time, sys, select
+class MyClientSocket:
     def __init__(self, sock=''):
         self.MSGLEN = 0
         if not sock:
@@ -11,7 +7,7 @@ class MySocket:
         else:
             self.sock = sock
 
-        self.buffer = 1024
+        self.buffer = 512
         self.sock.settimeout(2)
 
     def display(self) :
@@ -45,26 +41,6 @@ class MySocket:
             message = msg.encode()
             self.sock.sendall(message)
 
-    def mysend_old(self, msg):
-        self.MSGLEN = len(msg)
-        totalsent = 0
-        while totalsent < self.MSGLEN:
-            sent = self.sock.send(msg[totalsent:].encode())
-            if sent == 0:
-                raise RuntimeError("socket connection broken")
-            totalsent = totalsent + sent
-
-    def myreceive(self):
-        chunks = []
-        bytes_recd = 0
-        while bytes_recd < self.MSGLEN:
-            chunk = self.sock.recv(min(self.MSGLEN - bytes_recd, 2048))
-            if chunk == b'':
-                raise RuntimeError("socket connection broken")
-            chunks.append(chunk)
-            bytes_recd = bytes_recd + len(chunk)
-        return b''.join(chunks)
-
     def sockLoop(self):
         primeiro_acesso = True
         while True:
@@ -86,10 +62,11 @@ class MySocket:
                     else:
                         data = data.decode()
                         if data[:1] == '!':
-                            print(data[1:])
+                            sys.stdout.write(data[1:] + '\n')
                         else:
                             sys.stdout.write(data)
                         self.display()
+
                 #user entered a message
                 else :
                     self.display()
