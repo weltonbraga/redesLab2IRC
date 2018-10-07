@@ -23,24 +23,38 @@ class Channel(object):
 
 class Servidor(object):
     """docstring for Servidor"""
-    def __init__(self, host=''):
+    def __init__(self, channels_amount = 5):
         print('SERVIDOR')
         # comprimeto máximo de uma mensagem
         self.buffer = 1024
 
         # dictionary to store address corresponding to username
-        self.users_dict={}
-
-        self.server_address = (host, 9999)
+        self.users_dict = {}
 
         # List to keep track of socket descriptors
         self.connected_list = []
 
         self.lobby_channel = 0
 
-        self.channels_amount = 5
+        self.channels_amount = channels_amount
 
         self.channels_list = [Channel() for num in range(0, self.channels_amount)]
+
+        # registra handlers para comandos
+        self.handlers = {"/NICK"   : self.nickClientHandler,
+                         "/USUARIO": self.newClientHandler,
+                         "/SAIR"   : self.deleteClientHandler,
+                         "/ENTRAR" : self.subscribeChannelHandler,
+                         "/SAIRC"  : self.unsubscribeChannelHandler,
+                         "/LISTAR" : self.listChannelHandler,
+                        }
+
+    def listen(self, host = '', port = 9999):
+        # define host como o ip local
+        if not host:
+            host = socket.gethostbyname(socket.gethostname())
+
+        self.server_address = (host, port)
 
         # Create a TCP/IP socket
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -54,15 +68,6 @@ class Servidor(object):
 
         # Add server socket to the list of readable connections
         self.connected_list.append(self.server_socket)
-
-        # registra handlers para comandos
-        self.handlers = {"/NICK"   : self.nickClientHandler,
-                         "/USUARIO": self.newClientHandler,
-                         "/SAIR"   : self.deleteClientHandler,
-                         "/ENTRAR" : self.subscribeChannelHandler,
-                         "/SAIRC"  : self.unsubscribeChannelHandler,
-                         "/LISTAR" : self.listChannelHandler,
-                        }
 
     def nickClientHandler(self, list_args):
         address = list_args.pop(0)
@@ -289,9 +294,9 @@ def main():
         print('\n \tIniciando servidor com ip local.')
         print(' \tÉ possível inserir um ip para o servidor ao digitar:')
         print(' \tpython servidor.py <endereço ip>\n')
-        host = socket.gethostbyname(socket.gethostname())
 
-    s = Servidor(host)
+    s = Servidor(7)
+    s.listen(host)
     s.run()
 
 if __name__ == '__main__':

@@ -9,15 +9,14 @@ def main():
         print('\n \tIniciando cliente com ip local.')
         print(' \tÉ possível inserir um ip para o servidor ao digitar:')
         print(' \tpython cliente.py <endereço ip>\n')
-        host  = 'localhost'
-    port = 9999
-    buffer = 1024
 
-    mySock = MySocket()
-    mySock.connect(host, port)
+    #buffer = 1024
 
     nick = input('\33[32m\r\33[1m \n Digite o USUARIO: \33[0m')
     nick = nick.lower()
+
+    mySock = MySocket()
+    mySock.connect(host)
 
     mySock.sendNickAndHostname(nick)
     mySock.sockLoop()

@@ -4,9 +4,9 @@ class MySocket:
       - coded for clarity, not efficiency
     """
 
-    def __init__(self, sock=None):
+    def __init__(self, sock=''):
         self.MSGLEN = 0
-        if sock is None:
+        if not sock:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         else:
             self.sock = sock
@@ -22,10 +22,12 @@ class MySocket:
     def getMySocket(self):
         return self.sock
 
-    def connect(self, host, port):
+    def connect(self, host='', port=9999):
+        if not host:
+            host = socket.gethostbyname(socket.gethostname())
+        print ('\33[34m\33[1m [Sucesso] Conectando em {} porta {}. \33[0m'.format(host, port), end= '', flush=False)
         try:
             self.sock.connect((host, port))
-            print ('\33[34m\33[1m [Sucesso] Conectando em {} porta {}. \33[0m'.format(host, port), end= '', flush=False)
         except:
             print ("\33[31m\33[1m \n [Erro] Nao foi possivel conectar ao servidor. \33[0m")
             sys.exit(1)
